@@ -3,6 +3,8 @@
 #include "final.h"
 #include "server.h"
 
+#include <unistd.h> // sleep
+
 int main(int argc, char **argv)
 {
 	HttpSrv srv;
@@ -21,5 +23,9 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+sleep(8);
+	std::cout << "Stopping server...";
+	srv.deinit();
+	std::cout << " done." << std::endl;
 	return 0;
 }

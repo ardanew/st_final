@@ -1,9 +1,7 @@
 #include "server.h"
 #include "errors.h"
 
-
-
-HttpSrv::HttpSrv() : m_srvSock(NULL) {}
+HttpSrv::HttpSrv() : m_srvSock(0) {}
 
 HttpSrv::~HttpSrv() { deinit(); }
 
@@ -11,7 +9,7 @@ void HttpSrv::deinit()
 {
 	m_threadPool.deinit();
 
-	if( m_srvSock ) { closesocket(m_srvSock); m_srvSock = NULL; }
+	if( m_srvSock ) { closesocket(m_srvSock); m_srvSock = 0; }
 
 #ifdef _WIN32
 	WSACleanup();

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <syslog.h>
 #include <string.h>
+#include <iostream>
 #include "errors.h"
 
 int daemonize()
@@ -21,12 +22,17 @@ int daemonize()
 	pid = fork(); //Fork the Parent Process
 	if( pid < 0 ) { return Error::FORK_FAILED; }
 
-	if( pid > 0 ) { exit(EXIT_SUCCESS); } //We got a good pid, Close the Parent Process
-
+	if( pid > 0 ) { 
+		exit(EXIT_SUCCESS);
+	} //We got a good pid, Close the Parent Process
 	
 	umask(0); //Change File Mask
 	sid = setsid(); //Create a new Signature Id for our child
 	if( sid < 0 ) { return Error::FORK_FAILED; }
+
+	std::cout << "daemonized, pid = " << (long)getpid() << std::endl;
+
+	return 0;
 }
 
 #else
