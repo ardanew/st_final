@@ -2,6 +2,12 @@
 
 #include "final.h"
 #include "server.h"
+#ifdef _WIN32
+#include "daemonize.h"
+#else
+#include "ccan_daemon_with_notify_daemon_with_notify.h"
+#include <unistd.h> // sleep, dbg
+#endif
 
 int main(int argc, char **argv)
 {
@@ -20,7 +26,11 @@ int main(int argc, char **argv)
 		std::cout << "Can't daemonize, err = " << nDaemonizeRes << std::endl;
 		return -1;
 	}
+	else
+		std::cout << "Daemonized." << std::endl;
 	daemon_is_ready(); // tell parent to exit
+
+	sleep(6);
 
 	std::cout << "Stopping server...";
 	srv.deinit();
