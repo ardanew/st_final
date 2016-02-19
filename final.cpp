@@ -3,8 +3,6 @@
 #include "final.h"
 #include "server.h"
 
-#include <unistd.h> // sleep
-
 int main(int argc, char **argv)
 {
 	HttpSrv srv;
@@ -16,14 +14,14 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	int nDaemonizeRes = daemonize();
+	int nDaemonizeRes = daemonize(1, 1, 1); // fork
 	if( nDaemonizeRes < 0 )
 	{
 		std::cout << "Can't daemonize, err = " << nDaemonizeRes << std::endl;
 		return -1;
 	}
+	daemon_is_ready(); // tell parent to exit
 
-sleep(8);
 	std::cout << "Stopping server...";
 	srv.deinit();
 	std::cout << " done." << std::endl;

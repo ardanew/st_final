@@ -1,43 +1,14 @@
 #ifndef DEAMONIZE_H
 #define DEAMONIZE_H
 
-#if !defined(_WIN32)
+#ifdef _WIN32
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <syslog.h>
-#include <string.h>
-#include <iostream>
-#include "errors.h"
-
-int daemonize()
-{
-	pid_t pid, sid;
-
-	pid = fork(); //Fork the Parent Process
-	if( pid < 0 ) { return Error::FORK_FAILED; }
-
-	if( pid > 0 ) { 
-		exit(EXIT_SUCCESS);
-	} //We got a good pid, Close the Parent Process
-	
-	umask(0); //Change File Mask
-	sid = setsid(); //Create a new Signature Id for our child
-	if( sid < 0 ) { return Error::FORK_FAILED; }
-
-	std::cout << "daemonized, pid = " << (long)getpid() << std::endl;
-
-	return 0;
-}
+int daemonize(int nochdir, int noclose, int wait_sigusr1) { return 0; }
+int daemon_is_ready(void) { return 0; }
 
 #else
 
-int daemonize() { return 0; }
+#include "ccan_daemon_with_notify_daemon_with_notify.h"
 
 #endif
 
