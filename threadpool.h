@@ -53,7 +53,7 @@ public:
 	void enqueue(HandlerFunc&& handlerFunc, Args&&... args) // args - to pass object pointer and/or additional parameters
 	{
 		EnqueuedTask enqueuedTask = {
-			std::bind(std::forward<HandlerFunc>(handlerFunc), std::forward<Args>(args)..., std::placeholders::_1)
+			std::bind(std::forward<HandlerFunc>(handlerFunc), std::forward<Args>(args)...)
 		};
 
 		{ // lock tasks

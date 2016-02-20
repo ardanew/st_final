@@ -3,6 +3,9 @@
 
 struct Error
 {
+	static const int NONFATAL_ACCEPT_FAILED = 100;
+	static const int NONFATAL_TOO_MANY_CLIENTS = 101;
+
 	static const int CREATE_SRV_SOCKET = -100;
 	static const int THREADPOOL_INIT = -101;
 	static const int BIND_SRV_SOCKET = -102;

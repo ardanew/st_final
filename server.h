@@ -2,40 +2,53 @@
 #define SERVER_H
 #include <cstdint>
 #include <string>
-#include "threadpool.h"
+#include <deque>
+#include <functional>
+#include <algorithm>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <Windows.h>
-#include <WinSock2.h>
-#pragma comment(lib, "ws2_32.lib")
-#else
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#define SOCKET int
-#define closesocket(a) close(a)
-#endif
+#include "includes.h"
+#include "threadpool.h"
+#include "client.h"
+#include <mutex>
 
 class HttpSrv
 {
 public:
 	HttpSrv();
 	~HttpSrv();
+
 	void deinit();
-	int init(const std::string &sLocalIp, uint16_t nLocalPort);
+
+	/**
+	\brief Initializes the server.
+	\param sLocalIp server ip address to listen on, pass "0.0.0.0" to listen on all available adapters.
+	\param nLocalPort server listen port.
+	\return negative when failure, 0 if success.
+	**/
+	int init(const std::string &sLocalIp, uint16_t nLocalPort, const std::string &sDir);
+
+	/**
+	\brief Accepts an incoming connection and handles it.
+	\details Must be done in loop.
+			Blocks calling thread.
+	\return 0 if success, negative on critical failure, positive for non-fatal errors.
+	**/
+	int doAccept();
+
+	
 
 protected:
+	void onClientDisconnectHandler(HttpClient *pCln);
+
+	std::mutex m_mutClients;
 	static const size_t MAX_SRV_THREADS = 10;
 	ThreadPool m_threadPool;
 
+	std::deque<HttpClient*> m_deqClients;
+
 	SOCKET m_srvSock;
+
+	std::string m_sDir;
 };
 
 
