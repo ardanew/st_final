@@ -42,6 +42,20 @@ int main(int argc, char **argv)
 
 	std::cout << "Server parameters :" << std::endl << " host = " << sIp << ":" << sPort << std::endl << " dir = " << sDir << std::endl;
 
+	// run as background process
+	// NOTE not implemented for windows
+	
+	int nDaemonizeRes = daemonize(1, 1, 1); // fork
+	if( nDaemonizeRes < 0 )
+	{
+		std::cout << "Can't daemonize, err = " << nDaemonizeRes << std::endl;
+		return -1;
+	}
+	else
+		std::cout << "Daemonized." << std::endl;
+	daemon_is_ready(); // tell parent to exit
+
+
 	HttpSrv srv;
 	int nInitRes = srv.init(sIp, std::stoi(sPort), sDir);
 	if( nInitRes < 0 )
@@ -52,19 +66,6 @@ int main(int argc, char **argv)
 
 	std::cout << "Server started." << std::endl;
 
-	// run as background process
-	// NOTE not implemented for windows
-	
-/*	int nDaemonizeRes = daemonize(1, 1, 1); // fork
-	if( nDaemonizeRes < 0 )
-	{
-		std::cout << "Can't daemonize, err = " << nDaemonizeRes << std::endl;
-		return -1;
-	}
-	else
-		std::cout << "Daemonized." << std::endl;
-	daemon_is_ready(); // tell parent to exit
-*/
 
 	while( 1 )
 	{
