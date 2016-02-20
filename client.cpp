@@ -152,12 +152,6 @@ void HttpClient::execute()
 			fseek(f, 0, SEEK_SET);
 		}
 
-		std::string sMsg = "HTTP/1.1 ";
-		sMsg += sRequestFileName;
-		sMsg += " 200 OK \r\nContent-Type: text/html;charset=win-1251\r\nContent-Length: ";
-		sMsg += std::to_string(lSize);
-		sMsg += "\r\nCache - Control: no - cache, no - store\r\n\r\n";
-
 		char *pBuf = new char[lSize + 1];
 
 		if( fread(pBuf, lSize, 1, f) != 1 )
@@ -180,9 +174,25 @@ void HttpClient::execute()
 			return;
 		};
 
+		std::string sMsg = "HTTP/1.1 ";
+		sMsg += sRequestFileName;
+		sMsg += " 200 OK \r\nContent-Type: text/html;charset=win-1251\r\nContent-Length: ";
+
+		if( pBuf[0] != '<' && pBuf[1] != 'h' )
+			sMsg += std::to_string(lSize + 12);
+		else
+			sMsg += std::to_string(lSize);
+		sMsg += "\r\nCache - Control: no - cache, no - store\r\n\r\n";
+
+
 		pBuf[lSize] = '\0';
+
+		if( pBuf[0] != '<' && pBuf[1] != 'h' )
+			sMsg += "<html><body>";
 		sMsg += pBuf;
 		delete[] pBuf;
+		if( pBuf[0] != '<' && pBuf[1] != 'h' )
+			sMsg += "</body></html>";
 
 		if( send(m_sock, sMsg.c_str(), sMsg.length(), 0) != sMsg.length() )
 		{
