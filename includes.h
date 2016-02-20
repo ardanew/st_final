@@ -19,7 +19,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #define SOCKET int
-#define FILE int
+#define INVALID_SOCKET -1
+//#define FILE int
 #define closesocket(a) close(a)
 #endif
 

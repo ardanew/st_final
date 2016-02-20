@@ -40,6 +40,9 @@ int HttpSrv::init(const std::string &sLocalIp, uint16_t nLocalPort, const std::s
 	m_srvSock = socket(AF_INET, SOCK_STREAM, 0);
 	if( m_srvSock < 0 ) { return Error::CREATE_SRV_SOCKET; }
 
+	const int enableRAddr = 1;
+	if( setsockopt(m_srvSock, SOL_SOCKET, SO_REUSEADDR, (const char*)&enableRAddr, sizeof(int)) < 0 ) { return Error::REUSEADDR_SRV; }
+
 	struct sockaddr_in sv_addr;
 	sv_addr.sin_family = AF_INET;
 	sv_addr.sin_port = htons(nLocalPort);
@@ -48,8 +51,6 @@ int HttpSrv::init(const std::string &sLocalIp, uint16_t nLocalPort, const std::s
 
 	if( listen(m_srvSock, 0) != 0 ) { return Error::LISTEN_SRV_SOCKET;  }
 
-	const int enableRAddr = 1;
-	if( setsockopt(m_srvSock, SOL_SOCKET, SO_REUSEADDR, (const char*)&enableRAddr, sizeof(int)) < 0 ) { return Error::REUSEADDR_SRV; }
 
 	m_sDir = sDir;
 	return 0;
@@ -58,8 +59,13 @@ int HttpSrv::init(const std::string &sLocalIp, uint16_t nLocalPort, const std::s
 int HttpSrv::doAccept()
 {
 	struct sockaddr_in client_addr;
+#ifdef _WIN32
 	int nClientAddrLen = sizeof(client_addr);
 	SOCKET sockClient = accept(m_srvSock, (struct sockaddr*)&client_addr, &nClientAddrLen);
+#else
+	socklen_t nClientAddrLen = sizeof(client_addr);
+	SOCKET sockClient = accept(m_srvSock, (struct sockaddr*)&client_addr, &nClientAddrLen);
+#endif
 	if( sockClient == INVALID_SOCKET )
 	{
 		std::cout << "accept() failed, continue listening..." << std::endl;

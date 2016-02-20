@@ -4,6 +4,7 @@ project(final)
 set(SRCLIST
 	final.cpp
 	server.cpp
+	client.cpp
 )
 
 if(UNIX)

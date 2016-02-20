@@ -11,11 +11,11 @@ HttpClient::~HttpClient()
 
 void HttpClient::deinit()
 {
-	if( m_sock != NULL )
+	if( m_sock != 0 )
 	{
 		shutdown(m_sock, 0);
 		closesocket(m_sock);
-		m_sock = NULL;
+		m_sock = 0;
 	}
 }
 
@@ -47,8 +47,6 @@ bool SetSocketBlockingEnabled(int fd, bool blocking)
 
 void HttpClient::execute()
 {
-	std::cout << "Execute()" << std::endl; // TODO remove
-
 	char szRecvBuf[10000];
 
 	SetSocketBlockingEnabled(m_sock, false);
@@ -64,7 +62,8 @@ void HttpClient::execute()
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
 
-		if( select(FD_SETSIZE, &read_set, NULL, NULL, &tv) < 0 )
+		int nSelectRes = select(FD_SETSIZE, &read_set, NULL, NULL, &tv);
+		if( nSelectRes < 0 )
 		{
 			std::cout << "Select() fails" << std::endl;
 			onDisconnect();
@@ -84,6 +83,8 @@ void HttpClient::execute()
 		}
 		else
 		{
+			if( recv(m_sock, szRecvBuf, sizeof(szRecvBuf), 0) == 0 )
+				break;
 			if( m_bStop )
 				break;
 			continue;
@@ -140,7 +141,7 @@ void HttpClient::execute()
 
 			send(m_sock, s404.c_str(), s404.length(), 0);
 			onDisconnect();
-			fclose(f);
+			//fclose(f);
 			return;
 		}
 

@@ -54,8 +54,8 @@ int main(int argc, char **argv)
 
 	// run as background process
 	// NOTE not implemented for windows
-	/*
-	int nDaemonizeRes = daemonize(1, 1, 1); // fork
+	
+/*	int nDaemonizeRes = daemonize(1, 1, 1); // fork
 	if( nDaemonizeRes < 0 )
 	{
 		std::cout << "Can't daemonize, err = " << nDaemonizeRes << std::endl;
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	else
 		std::cout << "Daemonized." << std::endl;
 	daemon_is_ready(); // tell parent to exit
-	*/
+*/
 
 	while( 1 )
 	{
