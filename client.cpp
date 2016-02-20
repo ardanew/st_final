@@ -95,7 +95,6 @@ void HttpClient::execute()
 
 		std::istringstream split(szRecvBuf);
 		std::string sRequestFileName;
-		//bool bParsed = true;
 		for( std::string token; std::getline(split, token); )
 		{
 			if( token.find("GET ") != std::string::npos )
@@ -174,25 +173,28 @@ void HttpClient::execute()
 			return;
 		};
 
+		//std::cout << pBuf << std::endl;
+
 		std::string sMsg = "HTTP/1.1 ";
 		sMsg += sRequestFileName;
 		sMsg += " 200 OK \r\nContent-Type: text/html;charset=win-1251\r\nContent-Length: ";
 
-		if( pBuf[0] != '<' && pBuf[1] != 'h' )
-			sMsg += std::to_string(lSize + 12);
-		else
-			sMsg += std::to_string(lSize);
+		//if( pBuf[1] != 'h' )
+		//	sMsg += std::to_string(lSize + 12 + 14 - 1);
+		//else
+			sMsg += std::to_string(lSize - 1);
 		sMsg += "\r\nCache - Control: no - cache, no - store\r\n\r\n";
 
 
 		pBuf[lSize] = '\0';
 
-		if( pBuf[0] != '<' && pBuf[1] != 'h' )
-			sMsg += "<html><body>";
+//		if( pBuf[1] != 'h' )
+//			sMsg += "<html><body>";
 		sMsg += pBuf;
+		sMsg.pop_back();
 		delete[] pBuf;
-		if( pBuf[0] != '<' && pBuf[1] != 'h' )
-			sMsg += "</body></html>";
+		//if( pBuf[1] != 'h' )
+		//	sMsg += "</body></html>";
 
 		if( send(m_sock, sMsg.c_str(), sMsg.length(), 0) != sMsg.length() )
 		{
