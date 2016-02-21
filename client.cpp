@@ -118,7 +118,11 @@ void HttpClient::execute()
 		if( sRequestFileName == "/" )
 			sUsedFileName = "/index.html";
 		else
-			sUsedFileName = sRequestFileName;
+		{
+			std::stringstream ss(sRequestFileName);
+			std::getline(ss, sUsedFileName, '?');
+			//sUsedFileName = sRequestFileName;
+		}
 
 
 #ifdef _WIN32
@@ -130,13 +134,14 @@ void HttpClient::execute()
 		{ // 404
 			std::cout << "No page " << (m_sDir + sUsedFileName) << ", disconnecting." << std::endl;
 
-			std::string s404 = "HTTP/1.1 ";
+			std::string s404 = "HTTP/1.1 404 Not Found\r\n\r\n";
+/*			std::string s404 = "HTTP/1.1 ";
 			s404 += sRequestFileName;
 			const char sz404page[] = "<html><body>404 Page not found :(</html></body>";
 			s404 += " 404 Not Found\r\nContent-Type: text/html;charset=win-1251\r\nContent-Length: ";
 			s404 += std::to_string(sizeof(sz404page));
 			s404 += "\r\nCache - Control: no - cache, no - store\r\n\r\n";
-			s404 += sz404page;
+			s404 += sz404page;*/
 
 			send(m_sock, s404.c_str(), s404.length(), 0);
 			onDisconnect();
