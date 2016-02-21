@@ -16,9 +16,6 @@ int main(int argc, char **argv)
 	std::string sPort = "1415";
 #ifdef _WIN32
 	std::string sDir = "d:\\srv";
-#else
-	std::string sDir = "/tmp";
-#endif
 
 	for(int nArg = 1; nArg < argc; nArg += 2 )
 	{
@@ -33,6 +30,28 @@ int main(int argc, char **argv)
 			sDir = argv[nArg + 1];
 	}
 	
+#else
+	std::string sDir = "/tmp";
+
+
+	int c;
+	while((c = getopt(argc, argv, "d:h:p:")) != -1) {
+		switch(c)
+		{
+		case 'd':
+			sDir = optarg;
+			break;
+		case 'p':
+			sPort = optarg;
+			break;
+		case 'h':
+			sIp = optarg;
+			break;
+		}
+	}
+#endif
+
+
 	if( sDir.length() == 0 ) { std::cout << "Wrong path parameter" << std::endl;  return -1; }
 
 	// remove trailing slash if any
